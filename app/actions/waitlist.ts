@@ -15,7 +15,7 @@ export async function joinWaitlist(emailOrFormData: string | FormData) {
   }
 
   try {
-    // 1. Insert into Supabase
+    // 1. Log into Supabase database
     const { error } = await supabase.from('waitlist').insert({ email });
 
     if (error) {
@@ -24,31 +24,47 @@ export async function joinWaitlist(emailOrFormData: string | FormData) {
       return { error: 'Database connection failed. Try again.' };
     }
 
-    // 2. Database write succeeded! Fire confirmation email.
+    // 2. Fire clean confirmation email containing explicit hyperlink parameters
     try {
       await resend.emails.send({
         from: 'Remora <onboarding@resend.dev>', 
         to: [email],
-        subject: '[Remora] Private Beta Access Requested',
+        subject: '🔒 [Remora] Private Beta Access Requested',
         html: `
-          <div style="font-family: monospace; background-color: #09090b; color: #e4e4e7; padding: 32px; border-radius: 8px; max-width: 600px; margin: 0 auto;">
-            <h2 style="color: #ffffff; font-size: 20px; font-weight: bold; tracking: -0.05em; margin-bottom: 24px;">System: You are all set!</h2>
+          <div style="font-family: monospace; background-color: #09090b; color: #e4e4e7; padding: 32px; border-radius: 8px; max-width: 600px; margin: 0 auto; border: 1px solid #27272a;">
+            <h2 style="color: #ffffff; font-size: 20px; font-weight: bold; tracking: -0.05em; margin-bottom: 24px;">System: You are all set! </h2>
             <p style="font-size: 14px; line-height: 1.6; color: #a1a1aa;">Thank you for your interest in Remora.</p>
-            <p style="font-size: 14px; line-height: 1.6; color: #a1a1aa;">Your request for private beta access has been safely logged in our database.</p>
+            <p style="font-size: 14px; line-height: 1.6; color: #a1a1aa;">Your request for private beta access has been safely logged in our database. We are strictly limiting initial slots to protect telemetry stability and compute overhead during early daemon scaling nodes.</p>
+            
             <div style="background-color: #18181b; border: 1px solid #27272a; padding: 16px; border-radius: 6px; margin: 24px 0;">
               <code style="color: #34d399; font-size: 12px;">⚡ Status: Queued | Strategy: Automated Loop Disruption</code>
             </div>
+
+            <p style="font-size: 14px; line-height: 1.6; color: #a1a1aa;">
+              Monitor infrastructure node allocations and read the initial integration specification docs directly on our network interface:
+            </p>
+            
+            {/* Styled Hyperlink Button */}
+            <p style="margin: 24px 0; font-size: 14px;">
+              <a href="https://remora-jade.vercel.app" style="color: #ffffff; background-color: #27272a; border: 1px solid #3f3f46; padding: 10px 18px; border-radius: 6px; text-decoration: none; font-weight: bold; display: inline-block;">
+                Launch Remora Dashboard →
+              </a>
+            </p>
+
+            {/* Standard Bulletproof High-Contrast Underline Hyperlink */}
+            <p style="font-size: 14px; line-height: 1.6; color: #71717a;">
+              Network URL: <a href="https://remora-jade.vercel.app" target="_blank" style="color: #38bdf8; text-decoration: underline; font-weight: 500;">https://remora-jade.vercel.app</a>
+            </p>
+
             <hr style="border: 0; border-top: 1px solid #27272a; margin: 32px 0;" />
-            <p style="font-size: 11px; color: #71717a;">Remora Daemon System • Cloud Circuit Breakers for Autonomous Agents</p>
+            <p style="font-size: 11px; color: #52525b;">Remora Daemon System • Cloud Circuit Breakers for Autonomous Agents</p>
           </div>
         `
       });
     } catch (emailErr) {
-      // Muted error context so database success still propagates if the email service trips
       console.error('Failed to send confirmation email:', emailErr);
     }
 
-    // Explicitly return success inside the try block here
     return { success: true };
 
   } catch (err) {
