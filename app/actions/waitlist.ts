@@ -44,14 +44,13 @@ export async function joinWaitlist(emailOrFormData: string | FormData) {
               Monitor infrastructure node allocations and read the initial integration specification docs directly on our network interface:
             </p>
             
-            {/* Styled Hyperlink Button */}
+            
             <p style="margin: 24px 0; font-size: 14px;">
               <a href="https://remora-jade.vercel.app" style="color: #ffffff; background-color: #27272a; border: 1px solid #3f3f46; padding: 10px 18px; border-radius: 6px; text-decoration: none; font-weight: bold; display: inline-block;">
                 Launch Remora Dashboard →
               </a>
             </p>
 
-            {/* Standard Bulletproof High-Contrast Underline Hyperlink */}
             <p style="font-size: 14px; line-height: 1.6; color: #71717a;">
               Network URL: <a href="https://remora-jade.vercel.app" target="_blank" style="color: #38bdf8; text-decoration: underline; font-weight: 500;">https://remora-jade.vercel.app</a>
             </p>
